@@ -46,57 +46,76 @@ class HashTable:
         """
         Store the value with the given key.
         Hash collisions should be handled with Linked List Chaining.
-        Fill this in.
         """
+        index = self._hash_mod(key)
+        node_link = LinkedPair(key, value)
+
         if self.count >= self.capacity:
             self.resize()
-
-        pair = LinkedPair(key, value)
-        for i in range(0, self.capacity):
-            if i == self._hash_mod(key):
-                if self.storage[i] is None:
-                    self.count += 1
-                    self.storage[i] = pair
-                    print(self.storage)
-                    return
-                else:
-                    current = self.storage[i]
-                    while current.next is not None:
-                        current = current.next
-                    current.next = pair
-                    print(self.storage)
-                    return
+        if self.storage[index] is None:
+            self.count += 1
+            self.storage[index] = node_link
+            return
+        else:
+            current = self.storage[index]
+            while current.next is not None:
+                current = current.next
+            current.next = node_link
+            return
 
     def remove(self, key):
         """
         Remove the value stored with the given key.
-
         Print a warning if the key is not found.
-
-        Fill this in.
         """
-        pass
+
+        #while loop
+        # check if key is first node (head)
+        # if head node
+            # remove
+            # set .next to (head)
+        # else:
+            # remove node && set head to .next
+
+        index = self._hash_mod(key)
+        if self.storage[index]:
+            self.storage[index] = None
+        else:
+            print("Warning: key not found!")
 
     def retrieve(self, key):
         """
         Retrieve the value stored with the given key.
-
         Returns None if the key is not found.
-
-        Fill this in.
         """
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index]:
+            bucket_item = self.storage[index]
+            if bucket_item.key == key:
+                return bucket_item.value
+
+            while bucket_item.next:
+                bucket_item = bucket_item.next
+                if key == bucket_item.key:
+                    return bucket_item.value
 
     def resize(self):
         """
         Doubles the capacity of the hash table and
         rehash all key/value pairs.
-
-        Fill this in.
         """
-        self.capacity *= 2
-        new_storage = [None] * self.capacity
-        self.storage = new_storage
+
+        old_storage = self.storage.copy()
+        self.capacity = self.capacity * 2
+        self.storage = [None] * self.capacity
+
+        for bucket_item in old_storage:
+            if bucket_item is not None:
+                current = bucket_item
+                while current:
+                    self.insert(current.key, current.value)
+                    current = current.next
 
 
 if __name__ == "__main__":
